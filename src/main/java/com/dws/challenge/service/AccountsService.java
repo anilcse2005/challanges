@@ -31,7 +31,7 @@ public class AccountsService {
 	}	
 	
 	 @Transactional
-	 public void transfer(TransferRequest transferRequest){
+	 public synchronized void transfer(TransferRequest transferRequest){
 		 
 		 	Account accountFrom = repository.getAccountInfo(transferRequest.getAccountFromId())
 					.orElseThrow(() -> new AccountNotExistException("Account :" + transferRequest.getAccountFromId() + " does not exist."));
@@ -40,7 +40,7 @@ public class AccountsService {
 					.orElseThrow(() -> new AccountNotExistException("Account :" + transferRequest.getAccountFromId() + " does not exist."));
 		 
 		 	if (accountFrom.getBalance().compareTo(transferRequest.getAmount())<0) {
-		 		throw new InSufficientBalanceException("Does not have sufficient balance !!"+transferRequest.getAccountFromId());
+		 		throw new InSufficientBalanceException("InSufficient balance !!"+transferRequest.getAccountFromId());
 		 	}
 		 	
 		 	accountFrom.setBalance(accountFrom.getBalance().subtract(transferRequest.getAmount()));

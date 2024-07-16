@@ -21,7 +21,7 @@ public interface AccountsRepository extends JpaRepository<Account, Long>{
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Transactional
 	@Query("SELECT a FROM Account a WHERE a.accountId = ?1")
-	Optional<Account> getAccountInfo(Long id);
+	public Optional<Account> getAccountInfo(Long id);
 	
 	void createAccount(Account account) throws DuplicateAccountIdException;
 

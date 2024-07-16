@@ -13,7 +13,6 @@ import com.dws.challenge.domain.Account;
 import com.dws.challenge.domain.TransferRequest;
 import com.dws.challenge.exception.DuplicateAccountIdException;
 import com.dws.challenge.exception.InSufficientBalanceException;
-import com.dws.challenge.exception.InvalidAccountException;
 import com.dws.challenge.exception.TransactionFailedException;
 import com.dws.challenge.service.AccountsService;
 
@@ -25,40 +24,28 @@ public class AccountsController {
 	
 	@Autowired
 	 private AccountsService accountsService;
-	 
-
 
 	  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	  public ResponseEntity<Object> createAccount(@RequestBody @Valid Account account) {
-	   // logger.info("Creating account {}", account);
-
-	    try {
-	    	
-	    	accountsService.createAccount(account);
-	    	
+	    try {	    	
+	    	accountsService.createAccount(account);	    	
 	    } catch (DuplicateAccountIdException daie) {
 	      return new ResponseEntity<>(daie.getMessage(), HttpStatus.BAD_REQUEST);
 	    }
-
 	    return new ResponseEntity<>(HttpStatus.CREATED);
 	  }
 	 
 	  
-	  @PostMapping(path = "/transfer", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	  public ResponseEntity<Object> transferAmount(@RequestBody @Valid TransferRequest request) {
-	  // log.info("Creating account {}", account);
-
+	  @PostMapping(path = ("/transfer"), produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	  public synchronized ResponseEntity<Object> transferAmount(@RequestBody @Valid TransferRequest request) {
 	    try {
 	    	accountsService.transfer(request);
 	    } catch (InSufficientBalanceException ex) {
 	    	throw new InSufficientBalanceException("Balance is not sufficient!!");
-	    }catch (InvalidAccountException ex) {
-	    	throw new InvalidAccountException("Account not valid!!");
+	    
 		}catch (Exception e) {
 			throw new TransactionFailedException("Transaction Failed!!");
 		}
-	    
-
 	    return new ResponseEntity<>(HttpStatus.OK);
 	  }
 }
